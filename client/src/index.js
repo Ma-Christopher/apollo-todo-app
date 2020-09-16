@@ -1,14 +1,15 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { ApolloClient, ApolloProvider } from '@apollo/client';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
-import { cache } from './cache';
+import React from "react";
+import ReactDOM from "react-dom";
+import { ApolloClient, ApolloProvider } from "@apollo/client";
+import "./index.css";
+import App from "./App";
+import * as serviceWorker from "./serviceWorker";
+import { cache } from "./cache";
 
 const client = new ApolloClient({
   uri: `http://localhost:4000`,
   cache,
+  connectToDevTools: true,
 });
 
 // Example of an inline query
@@ -29,12 +30,12 @@ const client = new ApolloClient({
 //   });
 
 ReactDOM.render(
-  <React.StrictMode>
-    <ApolloProvider client={client}>
-      <App />
-    </ApolloProvider>
-  </React.StrictMode>,
-  document.getElementById('root')
+  // <React.StrictMode>
+  <ApolloProvider client={client}>
+    <App />
+  </ApolloProvider>,
+  // </React.StrictMode>,
+  document.getElementById("root")
 );
 
 // If you want your app to work offline and load faster, you can change

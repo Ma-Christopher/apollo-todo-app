@@ -51,6 +51,16 @@ class InMemoryTodoRepo {
     async completeAllTodos() {
         this.todos = this.todos.map((t) => (Object.assign(Object.assign({}, t), { completed: true })));
     }
+    async save(todo) {
+        const index = this.todos.findIndex((t) => t.id === todo.id);
+        const found = index !== -1;
+        if (found) {
+            this.todos[index] = todo;
+        }
+        else {
+            this.todos.push(todo);
+        }
+    }
 }
 exports.InMemoryTodoRepo = InMemoryTodoRepo;
 //# sourceMappingURL=InMemoryTodoRepo.js.map

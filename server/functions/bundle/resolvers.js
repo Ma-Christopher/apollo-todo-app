@@ -3,17 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const paginationUtils_1 = require("./shared/utils/paginationUtils");
 const resolvers = {
     Mutation: {
-        addTodo: async (_, { text }, context) => {
-            const { todosRepo } = context;
-            try {
-                await todosRepo.addTodo(text);
-                const todo = await todosRepo.getLastTodo();
-                return { success: true, todo };
-            }
-            catch (err) {
-                return { success: false, error: { message: 'Todo must be greater than 3 chars' } };
-            }
-        },
         completeTodo: async (_, { id }, context) => {
             const { todosRepo } = context;
             let todo;
@@ -30,19 +19,13 @@ const resolvers = {
             todo = await todosRepo.getTodoById(id);
             return { success: true, todo };
         },
-        clearCompletedTodos: async (_, __, context) => {
-            const { todosRepo } = context;
-            await todosRepo.clearCompletedTodos();
-            const todos = await todosRepo.getAllTodos();
-            return { success: true, todos };
-        },
         completeAllTodos: async (_, __, context) => {
             const { todosRepo } = context;
             await todosRepo.completeAllTodos();
             const todos = await todosRepo.getAllTodos();
             return { success: true, todos };
         },
-        deleteTodo: async (_, { id }, context) => {
+        toggleTodo: async (_, { id }, context) => {
             const { todosRepo } = context;
             let todo;
             try {
@@ -51,25 +34,8 @@ const resolvers = {
             catch (err) {
                 return { success: false, error: { message: 'Todo not found' } };
             }
-            await todosRepo.deleteTodo(id);
-            return { success: true, todo };
-        },
-        editTodo: async (_, { id, text }, context) => {
-            const { todosRepo } = context;
-            let todo;
-            try {
-                todo = await todosRepo.getTodoById(id);
-            }
-            catch (err) {
-                return { success: false, error: { message: 'Todo not found' } };
-            }
-            try {
-                await todosRepo.editTodo(id, text);
-            }
-            catch (err) {
-                return { success: false, error: { message: 'Todo must be greater than 3 chars' } };
-            }
-            todo = await todosRepo.getTodoById(id);
+            todo.completed = !todo.completed;
+            await todosRepo.save(todo);
             return { success: true, todo };
         }
     },
@@ -127,14 +93,6 @@ const resolvers = {
             }
             return 'TodoNotFoundError';
         },
-    },
-    EditTodoError: {
-        __resolveType(obj) {
-            if (obj.message === 'Todo must be greater than 3 chars') {
-                return 'TodoValidationError';
-            }
-            return 'TodoNotFoundError';
-        }
     }
 };
 exports.resolvers = resolvers;
